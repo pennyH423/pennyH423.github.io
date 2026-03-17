@@ -1,8 +1,16 @@
 const lerp = (a, b, t) => a + (b - a) * t;
 
-const supabaseClient = window.supabase?.createClient
-  ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY)
-  : null;
+let supabaseClient = null;
+try {
+  if (window.supabase && window.SUPABASE_URL && window.SUPABASE_KEY) {
+    supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+    console.log('Supabase client initialized');
+  } else {
+    console.log('Supabase config not available, running in local mode');
+  }
+} catch (e) {
+  console.error('Failed to initialize Supabase:', e);
+}
 
 const state = {
   mouseX: 0,

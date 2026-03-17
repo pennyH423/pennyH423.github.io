@@ -711,6 +711,7 @@ html {
   max-height: 86vh;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
+  z-index: 1;
   border-radius: 20px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
