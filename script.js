@@ -1,5 +1,9 @@
 const lerp = (a, b, t) => a + (b - a) * t;
 
+const supabaseClient = window.supabase?.createClient
+  ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY)
+  : null;
+
 const state = {
   mouseX: 0,
   mouseY: 0,
@@ -196,7 +200,7 @@ function savePostcard(data) {
   } catch {}
 }
 
-form?.addEventListener("submit", (e) => {
+form?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const message = (editorEl.value || "").trim();
   const nick = nameEl.value.trim();
@@ -223,9 +227,23 @@ form?.addEventListener("submit", (e) => {
     email: emailEl.value.trim(),
     message,
     template: currentTpl,
-    createdAt: new Date().toISOString(),
+    created_at: new Date().toISOString(),
   };
-  savePostcard(item);
+  hintEl.textContent = "正在投递...";
+  hintEl.classList.remove("success");
+  hintEl.classList.remove("error");
+  try {
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('glassfolio_postcards').insert(item);
+      if (error) throw error;
+    } else {
+      console.warn('Supabase client not initialized, skipping database insert');
+    }
+  } catch (err) {
+    hintEl.textContent = "投递失败: " + (err.message || "未知错误");
+    hintEl.classList.add("error");
+    return;
+  }
   hintEl.textContent = "";
   hintEl.classList.remove("success");
   hintEl.classList.remove("error");
