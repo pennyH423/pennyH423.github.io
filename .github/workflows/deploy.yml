@@ -11,19 +11,25 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # --- 关键新增：指定部署环境 ---
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # ---------------------------
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Inject Secrets and Deploy
+      - name: Inject Secrets
         run: |
           echo "window.SUPABASE_URL='${{ secrets.SUPABASE_URL }}';" > env.js
           echo "window.SUPABASE_KEY='${{ secrets.SUPABASE_KEY }}';" >> env.js
-
+             
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
