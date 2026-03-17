@@ -2,6 +2,12 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -11,10 +17,9 @@ jobs:
 
       - name: Inject Secrets and Deploy
         run: |
-          # 这一步会在云端生成 env.js 文件
           echo "window.SUPABASE_URL='${{ secrets.SUPABASE_URL }}';" > env.js
           echo "window.SUPABASE_KEY='${{ secrets.SUPABASE_KEY }}';" >> env.js
-             
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
